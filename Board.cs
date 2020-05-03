@@ -10,6 +10,8 @@ namespace Trello
 
         public string Title;
 
+        public Person Teacher { get; set; }
+
         private DateTime createDate;
         public DateTime CreateDate { get => createDate; }
 
@@ -22,18 +24,22 @@ namespace Trello
             return $"{id}. title: {Title}\t create date: {CreateDate.ToString("d")}";
         }
 
-        public Board(string name, TrelloAnalog MyProgram)
+        public Board(string name, TrelloAnalog myProgram)
         {
             Title = name;
-            id = MyProgram.Boards.Count() + 1;
+            id = myProgram.repository.Boards.Get().Count() + 1;
             createDate = DateTime.Now;
+            this.Teacher = myProgram.CurrentStudent;
+
+            myProgram.BoardEvents.onBoardCreateHandler(this);
         }
 
-        public Board(string name, int BoardId, DateTime createDate)
+        public Board(string name, int BoardId, DateTime createDate, TrelloAnalog myProgram, Person teacher)
         {
             Title = name;
             id = BoardId;
             this.createDate = createDate;
-        }
+            this.Teacher = teacher;
+        }     
     }
 }

@@ -9,7 +9,9 @@ namespace Trello
         {
             TrelloAnalog TrelloProgram = new TrelloAnalog();
 
-            TrelloProgram.StartApp();
+            AbstractDBProvider dbProvider = new XML(TrelloProgram);
+
+            TrelloProgram.StartApp(dbProvider);
         }
     }
 
@@ -19,5 +21,11 @@ namespace Trello
         OnTeacher,
         OnStudent,
         Done
+    }
+
+    public enum PersonType
+    {
+        Teacher,
+        Student
     }
 }

@@ -8,11 +8,13 @@ namespace Trello
     {
         public Person CurrentStudent;
 
-        public List<Person> Students;
-
-        public List<Board> Boards;
+        public Repository repository;
 
         private Board currentBoard;
+
+        public BoardEvents BoardEvents;
+        public HomeWorkEvents HomeWorkEvents;
+
 
         public Board CurrentBoard { get => currentBoard; }
 
@@ -22,17 +24,14 @@ namespace Trello
         //program operations
         public TrelloAnalog()
         {
-            Students = new List<Person>();
-
-            Boards = new List<Board>();
-
-            //Чтение из файла
-            XML xml = new XML();
-            xml.ReadDataFromFile(this);
+            BoardEvents = new BoardEvents();
+            HomeWorkEvents = new HomeWorkEvents();
         }
 
-        public void StartApp()
+        public void StartApp(AbstractDBProvider dbProvider)
         {
+            repository = new Repository(this, dbProvider);
+
             bool userExist = LoginToProgram();
             if (userExist == false) return;
 
@@ -49,19 +48,29 @@ namespace Trello
             Person student = Person.Login(userName, this);
             if (student == null)
             {
-                OutPut = "There are no such student in database, create new? (press \"y\" to confirm)";
+                OutPut = "There are no such person in database, create new? (press \"y\" to confirm)";
 
                 char answer = Console.ReadKey().KeyChar;
                 if (answer == 'y')
                 {
-                    Person newStudent = Person.RegisterStudent(userName, this);
+                    OutPut = "\nAre you teacher or student?\n 1. Teacher\n 2. Student";
 
-                    XML xml = new XML();
-                    xml.AddPersonToXml(newStudent);
+                    char answerPersontype = '0';
 
-                    CurrentStudent = newStudent;
-                    Students.Add(newStudent);
+                    while (!(answerPersontype == '1' || answerPersontype == '2'))
+                    {
+                        answerPersontype = Console.ReadKey().KeyChar;
+                    }
 
+                    OutPut = "\nEnter email:";
+                    string email = Console.ReadLine();
+
+                    Person newPerson = Person.RegisterPerson(userName, this,
+                                                             answerPersontype == '1' ? PersonType.Teacher : PersonType.Student,
+                                                             email);
+                        
+                    CurrentStudent = newPerson;
+                    repository.Persons.Add(newPerson);
                     sucsses = true;
                 }
             }
@@ -80,55 +89,103 @@ namespace Trello
         {
             while (true)
             {
-                OutPut = "Menu:\n" +
-                    "1. Show all boards\n" +
-                    "2. Create board\n" +
-                    "3. Choose current board\n" +
-                    "4. Show all home works\n" +
-                    "5. Show all home works by student\n" +
-                    "6. Show overdue home works\n" + 
-                    "7. Delete board\n" +
-                    "8. Exit program\n";
-
-                var key = Console.ReadKey().KeyChar;
-                Console.WriteLine("\n");
-
-                switch (key)
+                if (CurrentStudent.personType == PersonType.Teacher)
                 {
-                    case '1':
-                        ShowAllBoards();
-                        break;
+                    OutPut = "Menu:\n" +
+                            "1. Show all boards\n" +
+                            "2. Create board\n" +
+                            "3. Choose current board\n" +
+                            "4. Show all home works\n" +
+                            "5. Show all home works by student\n" +
+                            "6. Show overdue home works\n" +
+                            "7. Delete board\n" +
+                            "8. Exit program\n";
 
-                    case '2':
-                        CreateBoard();
-                        break;
+                    var key = Console.ReadKey().KeyChar;
+                    Console.WriteLine("\n");
 
-                    case '3':
-                        ChooseCurrentBoard();
-                        break;
+                    switch (key)
+                    {
+                        case '1':
+                            ShowAllBoards();
+                            break;
 
-                    case '4':
-                        ShowAllHomeWorks();
-                        break;
+                        case '2':
+                            CreateBoard();
+                            break;
 
-                    case '5':
-                        ShowAllHomeWorksByStudent();
-                        break;
+                        case '3':
+                            ChooseCurrentBoard();
+                            break;
 
-                    case '6':
-                        ShowOverdueHomeWorks();
-                        break;
+                        case '4':
+                            ShowAllHomeWorks();
+                            break;
 
-                    case '7':
-                        DeleteBoard();
-                        break;
+                        case '5':
+                            ShowAllHomeWorksByStudent();
+                            break;
 
-                    case '8':
-                        return;
+                        case '6':
+                            ShowOverdueHomeWorks();
+                            break;
 
-                    default:
-                        continue;
+                        case '7':
+                            DeleteBoard();
+                            break;
+
+                        case '8':
+                            return;
+
+                        default:
+                            continue;
+                    }
                 }
+                else
+                {
+                    OutPut = "Menu:\n" +
+                            "1. Show all boards\n" +
+                            "2. Choose current board\n" +
+                            "3. Show all home works\n" +
+                            "4. Show all home works by student\n" +
+                            "5. Show overdue home works\n" +
+                            "6. Exit program\n";
+
+                    var key = Console.ReadKey().KeyChar;
+                    Console.WriteLine("\n");
+
+                    switch (key)
+                    {
+                        case '1':
+                            ShowAllBoards();
+                            break;
+
+                        case '2':
+                            ChooseCurrentBoard();
+                            break;
+
+                        case '3':
+                            ShowAllHomeWorks();
+                            break;
+
+                        case '4':
+                            ShowAllHomeWorksByStudent();
+                            break;
+
+                        case '5':
+                            ShowOverdueHomeWorks();
+                            break;
+
+                        case '6':
+                            return;
+
+                        default:
+                            continue;
+                    }
+                }
+                
+
+                
             }
         }
 
@@ -193,15 +250,15 @@ namespace Trello
         //BOARD operations 
         private void ShowAllBoards()
         {
-
-            if (Boards.Count == 0)
+            var boards = repository.Boards.Get().ToList();
+            if (boards.Count == 0)
             {
                 OutPut = "There are no board in program\n";
             }
             else
             {
                 OutPut = "list of all boards:\n";
-                foreach (var board in Boards)
+                foreach (var board in boards)
                 {
                     OutPut = board.ToString();
                 }
@@ -223,7 +280,9 @@ namespace Trello
                 }
             }
 
-            var foundedBoard = Boards.Where(b => b.Title == boardTitle.Trim());
+            var boards = repository.Boards.Get().ToList();
+
+            var foundedBoard = boards.Where(b => b.Title == boardTitle.Trim());
 
             if (foundedBoard.Count() > 0)
             {
@@ -234,10 +293,8 @@ namespace Trello
             {
                 Board board = new Board(boardTitle, this);
 
-                XML xml = new XML();
-                xml.AddBoardToXML(board);
+                repository.Boards.Add(board);
 
-                Boards.Add(board);
                 ChangeCurrentBoard(board);
             }
 
@@ -263,19 +320,12 @@ namespace Trello
 
         private void ShowAllHomeWorks()
         {
-            foreach (Person student in Students)
+            List<HomeWork> homeWorks = repository.HomeWorks.Get().ToList();
+            foreach (HomeWork HW in homeWorks)
             {
-                OutPut = $"Student: {student.PersonName}";
-
-                foreach (Board board in Boards)
-                {
-                    var boardHomeWorks = board.HomeWorkList.Where(hw => hw.Student == student);
-                    foreach (HomeWork HW in boardHomeWorks)
-                    {
-                        OutPut = HW.ToString();
-                    }
-                }
+                OutPut = HW.ToString();
             }
+
             OutPut = "\n";
         }
 
@@ -286,37 +336,28 @@ namespace Trello
 
             int.TryParse(Console.ReadLine(), out int id);
 
-            var studentsById = Students.Where(s => s.id == id);
-            if (studentsById.Count() > 0)
+            List<HomeWork> homeWorks = repository.HomeWorks.Get().ToList();
+            var homeWorksByStudent = homeWorks.Where(hw => hw.Student.id == id);
+            foreach (var hw in homeWorksByStudent)
             {
-                Person student = studentsById.First();
-
-                foreach (Board board in Boards)
-                {
-                    var boardHomeWorks = board.HomeWorkList.Where(hw => hw.Student == student);
-                    foreach (HomeWork HW in boardHomeWorks)
-                    {
-                        OutPut = HW.ToString();
-                    }
-                }
+                OutPut = hw.ToString();
             }
             OutPut = "\n";
-
         }
 
         private void ShowOverdueHomeWorks()
         {
             OutPut = "Overdue home works:\n";
 
-            foreach (Board board in Boards)
-            {            
-                var OverdueHomeWorks = board.HomeWorkList.Where(hw => board.DaysTerm > DateDifferenceInDays(hw.CreateDate, board.CreateDate));
+            var homeWorks = repository.HomeWorks.Get().ToList();
+
+            var OverdueHomeWorks = homeWorks.Where(hw => hw.board.DaysTerm > DateDifferenceInDays(hw.CreateDate, hw.board.CreateDate));
                 
                 foreach (HomeWork HW in OverdueHomeWorks)
                 {
                     OutPut = HW.ToString();
                 }
-            }
+            
             OutPut = "\n";
         }
 
@@ -324,12 +365,7 @@ namespace Trello
         {
             Board board = FindBoardByNumber();
 
-            board.HomeWorkList.Clear();
-            
-            Boards.Remove(board);
-
-            XML xml = new XML();
-            xml.DeleteBoardFromXML(board);
+            repository.Boards.Delete(board);
 
             OutPut = "\n";
 
@@ -348,10 +384,9 @@ namespace Trello
                 int.TryParse(Console.ReadKey().KeyChar.ToString(), out boardId);
                 if (boardId > 0)
                 {
-                    var boards = Boards.Where(b => b.id == boardId);
-                    if (boards.Count() > 0)
-                    {
-                        board = boards.First();
+                    board = repository.Boards.Get(boardId);
+                    if (board != null)
+                    {      
                         break;
                     }
                     else
@@ -366,9 +401,11 @@ namespace Trello
             return board;
         }
 
+        //Students
         private void ShowAllStudents()
         {
-            foreach (Person student in Students)
+            var students = repository.Persons.Get().ToList();
+            foreach (Person student in students)
             {
                 OutPut = student.ToString();
             }
@@ -448,10 +485,9 @@ namespace Trello
             OutPut = "Enter the comment:\n";
             string comment = Console.ReadLine();
 
-            HomeWork newHomeWork = new HomeWork(CurrentBoard, title, text, comment, CurrentStudent);
+            HomeWork newHomeWork = new HomeWork(CurrentBoard, title, text, comment, CurrentStudent, this);
 
-            XML xml = new XML();
-            xml.AddHomeWorkToXML(newHomeWork);
+            repository.HomeWorks.Add(newHomeWork);
 
             CurrentBoard.HomeWorkList.Add(newHomeWork);
 
@@ -491,8 +527,7 @@ namespace Trello
                     homeWork.Comment = comment;
                 }
 
-                XML xml = new XML();
-                xml.UpdateHomeWorkToXML(homeWork);
+                repository.HomeWorks.Update(homeWork);
 
             }
         }
@@ -502,10 +537,14 @@ namespace Trello
             HomeWork homeWork = FindHomeWorkByNumber();
             if (homeWork != null)
             {
-                homeWork.Status = ShowAndChooseStatus();
+                var prevStatus = homeWork.Status;
 
-                XML xml = new XML();
-                xml.UpdateHomeWorkToXML(homeWork);
+                homeWork.Status = ShowAndChooseStatus();
+                var newStatus = homeWork.Status;
+
+                repository.HomeWorks.Update(homeWork);
+
+                HomeWorkEvents.onHomeWorkChangeStatusHandler(homeWork, prevStatus, newStatus);
             }
         }
 
@@ -539,8 +578,7 @@ namespace Trello
             {
                 CurrentBoard.HomeWorkList.Remove(homeWork);
 
-                XML xml = new XML();
-                xml.DeleteHomeWorkFromXML(homeWork);
+                repository.HomeWorks.Delete(homeWork);
             }
         }
 

@@ -19,7 +19,7 @@ namespace Trello
 
         public Person Student;
 
-        public HomeWork(Board board, string title, string text, string comment, Person student)
+        public HomeWork(Board board, string title, string text, string comment, Person student, TrelloAnalog myProgram)
         {
             id = board.HomeWorkList.Count + 1;
             Status = HomeWorkStatus.ToDo;
@@ -30,6 +30,8 @@ namespace Trello
             Comment = comment;
             Student = student;
             createDate = DateTime.Now;
+
+            myProgram.HomeWorkEvents.onHomeWorkCreateHandler(this);
         }
 
         public HomeWork(Board board, string title, string text, string comment,
@@ -48,6 +50,6 @@ namespace Trello
         public override string ToString()
         {
             return $"{id}. tile:{Title}\t status:{Status}\t student:{Student.PersonName}\t text:{Text}\t comment:{Comment}";
-        }       
+        }
     }
 }
