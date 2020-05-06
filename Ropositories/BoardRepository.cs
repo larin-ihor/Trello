@@ -27,7 +27,7 @@ namespace Trello
 
         public Board Get(int id)
         {
-            var findedBoards = data.Where(b => b.id == id);
+            var findedBoards = data.Where(b => b.Id == id);
             if (findedBoards.Count() > 0)
             {
                 return findedBoards.First();

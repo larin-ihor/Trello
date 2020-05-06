@@ -9,7 +9,8 @@ namespace Trello
         {
             TrelloAnalog TrelloProgram = new TrelloAnalog();
 
-            AbstractDBProvider dbProvider = new XML(TrelloProgram);
+            //AbstractDBProvider dbProvider = new XML(TrelloProgram);
+            AbstractDBProvider dbProvider = new JSON(TrelloProgram);
 
             TrelloProgram.StartApp(dbProvider);
         }

@@ -1,37 +1,42 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Trello
 {
     class Person
     {
-        public int id;
+        //[JsonRequired]
+        public int Id;
         public string PersonName { get; set; }
 
-        public PersonType personType;
+        public PersonType PersonType { get; set; }
 
         public string Email { get; set; }
 
-        public Person(string personName, int studentId, PersonType type, string email, TrelloAnalog myProgram)
+        [JsonConstructor]
+        public Person(string personName, int id, PersonType personType, string email)
         {
-            id = studentId;
-            PersonName = personName;
-            personType = type;
-            Email = email;
+            this.Id = id;
+            this.PersonName = personName;
+            this.PersonType = personType;
+            this.Email = email;
 
-            if (personType == PersonType.Student && Email != "")
+            if (PersonType == PersonType.Student && Email != "")
             {
-                myProgram.BoardEvents.onBoardCreate += OnBoardCreateHandler;
+                Board.onBoardCreate += OnBoardCreateHandler;
             }
-            else if (personType == PersonType.Teacher && Email != "")
+            else if (PersonType == PersonType.Teacher && Email != "")
             {
-                myProgram.HomeWorkEvents.onHomeWorkCreate += OnHomeWorkCreateHandler;
-                myProgram.HomeWorkEvents.onHomeWorkChangeStatus += OnHomeWorkChangeStatusHandler;
+                HomeWork.onHomeWorkCreate += OnHomeWorkCreateHandler;
+                HomeWork.onHomeWorkChangeStatus += OnHomeWorkChangeStatusHandler;
             }
         }
 
         public override string ToString()
         {
-            return $"{id}. {PersonName}";
+            return $"{Id}. {PersonName}";
         }
 
         public static Person Login(string userName, TrelloAnalog myProgram)
@@ -49,7 +54,7 @@ namespace Trello
 
         public static Person RegisterPerson(string name, TrelloAnalog myProgram, PersonType type, string email)
         {
-            Person newStudent = new Person(name, myProgram.repository.Persons.Get().Count() + 1, type, email, myProgram);
+            Person newStudent = new Person(name, myProgram.repository.Persons.Get().Count() + 1, type, email);
 
             return newStudent;
         }

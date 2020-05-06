@@ -12,8 +12,8 @@ namespace Trello
 
         private Board currentBoard;
 
-        public BoardEvents BoardEvents;
-        public HomeWorkEvents HomeWorkEvents;
+        //public BoardEvents BoardEvents;
+        //public HomeWorkEvents HomeWorkEvents;
 
 
         public Board CurrentBoard { get => currentBoard; }
@@ -24,8 +24,8 @@ namespace Trello
         //program operations
         public TrelloAnalog()
         {
-            BoardEvents = new BoardEvents();
-            HomeWorkEvents = new HomeWorkEvents();
+            //BoardEvents = new BoardEvents();
+            //HomeWorkEvents = new HomeWorkEvents();
         }
 
         public void StartApp(AbstractDBProvider dbProvider)
@@ -89,7 +89,7 @@ namespace Trello
         {
             while (true)
             {
-                if (CurrentStudent.personType == PersonType.Teacher)
+                if (CurrentStudent.PersonType == PersonType.Teacher)
                 {
                     OutPut = "Menu:\n" +
                             "1. Show all boards\n" +
@@ -337,7 +337,7 @@ namespace Trello
             int.TryParse(Console.ReadLine(), out int id);
 
             List<HomeWork> homeWorks = repository.HomeWorks.Get().ToList();
-            var homeWorksByStudent = homeWorks.Where(hw => hw.Student.id == id);
+            var homeWorksByStudent = homeWorks.Where(hw => hw.Student.Id == id);
             foreach (var hw in homeWorksByStudent)
             {
                 OutPut = hw.ToString();
@@ -544,7 +544,7 @@ namespace Trello
 
                 repository.HomeWorks.Update(homeWork);
 
-                HomeWorkEvents.onHomeWorkChangeStatusHandler(homeWork, prevStatus, newStatus);
+                HomeWork.onHomeWorkChangeStatusHandler(homeWork, prevStatus, newStatus);
             }
         }
 

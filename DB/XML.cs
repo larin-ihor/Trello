@@ -93,7 +93,7 @@ namespace Trello
                                 email = attrEmail.Value;
 
                             //создаем класс
-                            Person student = new Person(name, id, personType, email, myProgram);
+                            Person student = new Person(name, id, personType, email);
                             Persons.Add(student);
                         }
                     }
@@ -145,7 +145,7 @@ namespace Trello
                             }
 
                             //создаем класс
-                            Board board = new Board(name, id, createDT, myProgram, teacher);
+                            Board board = new Board(name, id, createDT, teacher);
                             Boards.Add(board);
                         }
                     }
@@ -332,12 +332,12 @@ namespace Trello
                     var HWNode = doc.CreateElement("HomeWork");
 
                     AddAtrributeToNode(HWNode, "id", HW.id.ToString());
-                    AddAtrributeToNode(HWNode, "boardId", HW.board.id.ToString());
+                    AddAtrributeToNode(HWNode, "boardId", HW.board.Id.ToString());
                     AddAtrributeToNode(HWNode, "title", HW.Title);
                     AddAtrributeToNode(HWNode, "text", HW.Text);
                     AddAtrributeToNode(HWNode, "comment", HW.Comment);
                     AddAtrributeToNode(HWNode, "status", "" + (int)HW.Status + 1);
-                    AddAtrributeToNode(HWNode, "studentId", HW.Student.id.ToString());
+                    AddAtrributeToNode(HWNode, "studentId", HW.Student.Id.ToString());
 
                     node.AppendChild(HWNode);
 
@@ -362,14 +362,14 @@ namespace Trello
                         XmlNode attrId = HWNode.Attributes.GetNamedItem("id");
                         XmlNode attrBoardId = HWNode.Attributes.GetNamedItem("boardId");
 
-                        if ((attrBoardId != null && attrBoardId.Value == HW.board.id.ToString())
+                        if ((attrBoardId != null && attrBoardId.Value == HW.board.Id.ToString())
                             && (attrId != null && attrId.Value == HW.id.ToString()))
                         {
                             UpdateAttribute(HWNode, "title", HW.Title);
                             UpdateAttribute(HWNode, "text", HW.Text);
                             UpdateAttribute(HWNode, "comment", HW.Comment);
                             UpdateAttribute(HWNode, "status", "" + ((int)HW.Status + 1));
-                            UpdateAttribute(HWNode, "studentId", HW.Student.id.ToString());
+                            UpdateAttribute(HWNode, "studentId", HW.Student.Id.ToString());
 
                             SaveXMLfile(doc);
 
@@ -395,7 +395,7 @@ namespace Trello
                         XmlNode attrId = HWNode.Attributes.GetNamedItem("id");
                         XmlNode attrBoardId = HWNode.Attributes.GetNamedItem("boardId");
 
-                        if ((attrBoardId != null && attrBoardId.Value == HW.board.id.ToString())
+                        if ((attrBoardId != null && attrBoardId.Value == HW.board.Id.ToString())
                             && (attrId != null && attrId.Value == HW.id.ToString()))
                         {
                             node.RemoveChild(HWNode);
@@ -425,10 +425,10 @@ namespace Trello
                 {
                     var boardNode = doc.CreateElement("board");
 
-                    AddAtrributeToNode(boardNode, "id", board.id.ToString());
+                    AddAtrributeToNode(boardNode, "id", board.Id.ToString());
                     AddAtrributeToNode(boardNode, "title", board.Title);
                     AddAtrributeToNode(boardNode, "createDate", board.CreateDate.ToString("d"));
-                    AddAtrributeToNode(boardNode, "teacherId", board.Teacher.id.ToString());
+                    AddAtrributeToNode(boardNode, "teacherId", board.Teacher.Id.ToString());
 
                     node.AppendChild(boardNode);
 
@@ -451,7 +451,7 @@ namespace Trello
                     foreach (XmlNode boardNode in node.ChildNodes)
                     {
                         XmlNode attrId = boardNode.Attributes.GetNamedItem("id");
-                        if (attrId.Value == board.id.ToString())
+                        if (attrId.Value == board.Id.ToString())
                         {
                             boardNode.RemoveAll();
                             node.RemoveChild(boardNode);
@@ -478,9 +478,9 @@ namespace Trello
                 {
                     var userNode = doc.CreateElement("user");
 
-                    AddAtrributeToNode(userNode, "id", student.id.ToString());
+                    AddAtrributeToNode(userNode, "id", student.Id.ToString());
                     AddAtrributeToNode(userNode, "name", student.PersonName);
-                    AddAtrributeToNode(userNode, "type", ((int)student.personType).ToString());
+                    AddAtrributeToNode(userNode, "type", ((int)student.PersonType).ToString());
                     AddAtrributeToNode(userNode, "email", student.Email);
 
                     node.AppendChild(userNode);
