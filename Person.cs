@@ -7,7 +7,6 @@ namespace Trello
 {
     class Person
     {
-        //[JsonRequired]
         public int Id;
         public string PersonName { get; set; }
 
