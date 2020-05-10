@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Trello
 {
-    interface IRepository<TEntity>
+    interface IEntityRepository<TEntity>
     {
         public void Add(TEntity entity);
 

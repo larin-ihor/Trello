@@ -28,7 +28,7 @@ namespace Trello
             //HomeWorkEvents = new HomeWorkEvents();
         }
 
-        public void StartApp(AbstractDBProvider dbProvider)
+        public void StartApp(IDBProvider dbProvider)
         {
             repository = new Repository(this, dbProvider);
 
@@ -79,6 +79,8 @@ namespace Trello
                 CurrentStudent = student;
                 sucsses = true;
             }
+
+            Logger.WriteLogAsync($"{CurrentStudent} is logged to program");
 
             return sucsses;
         }

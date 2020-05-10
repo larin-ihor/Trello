@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace Trello
 {
-    class BoardRepository : IRepository<Board>
+    class BoardRepository : IEntityRepository<Board>
     {
         List<Board> data;
-        AbstractDBProvider dbProvider;
+        IDBProvider dbProvider;
         Repository repository;
 
-        public BoardRepository(AbstractDBProvider dBProvider, Repository repository)
+        public BoardRepository(IDBProvider dBProvider, Repository repository)
         {
             this.dbProvider = dBProvider;
             this.repository = repository;
@@ -44,6 +44,7 @@ namespace Trello
         public void Update(Board entity)
         {
             dbProvider.Update<Board>(entity);
+            Logger.WriteLogAsync($"Board {entity} is updated");
         }
 
         public void Delete(Board board)
@@ -58,6 +59,8 @@ namespace Trello
             data.Remove(board);
 
             dbProvider.RemoveFromDB<Board>(board);
+
+            Logger.WriteLogAsync($"Board {board} is deleted");
         }
     }
 }

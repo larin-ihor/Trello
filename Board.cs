@@ -39,6 +39,8 @@ namespace Trello
             createDate = DateTime.Now;
             this.Teacher = myProgram.CurrentStudent;
 
+            Logger.WriteLogAsync($"Created new board: {this}");
+
             onBoardCreateHandler(this);
         }
 
