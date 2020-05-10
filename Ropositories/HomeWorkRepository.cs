@@ -5,12 +5,12 @@ using System.Linq;
 
 namespace Trello
 {
-    class HomeWorkRepository : IRepository<HomeWork>
+    class HomeWorkRepository : IEntityRepository<HomeWork>
     {
         List<HomeWork> data;
-        AbstractDBProvider dbProvider;
+        IDBProvider dbProvider;
         
-        public HomeWorkRepository(AbstractDBProvider dBProvider, Repository repository)
+        public HomeWorkRepository(IDBProvider dBProvider, Repository repository)
         {
             this.dbProvider = dBProvider;
             
@@ -42,12 +42,15 @@ namespace Trello
         public void Update(HomeWork entity)
         {
             dbProvider.Update<HomeWork>(entity);
+
+            Logger.WriteLogAsync($"Home work {entity} is updated");
         }
 
         public void Delete(HomeWork entity)
         {
             data.Remove(entity);
             dbProvider.RemoveFromDB<HomeWork>(entity);
+            Logger.WriteLogAsync($"Home work {entity} is deleted");
         }
     }
 }

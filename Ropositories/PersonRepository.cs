@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace Trello
 {
-    class PersonRepository : IRepository<Person>
+    class PersonRepository : IEntityRepository<Person>
     {
         List<Person> data;
-        AbstractDBProvider dbProvider;
+        IDBProvider dbProvider;
         
 
-        public PersonRepository(AbstractDBProvider dBProvider)
+        public PersonRepository(IDBProvider dBProvider)
         {
             this.dbProvider = dBProvider;
             

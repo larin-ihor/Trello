@@ -39,6 +39,8 @@ namespace Trello
             Student = student;
             createDate = DateTime.Now;
 
+            Logger.WriteLogAsync($"Created new home work: {this}");
+
             onHomeWorkCreateHandler(this);
         }
 

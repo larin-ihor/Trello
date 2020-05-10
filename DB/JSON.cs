@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace Trello
 {
-    class JSON : AbstractDBProvider
+    class JSON : IDBProvider
     {
         public const string FilePathPersons = "DB_Persons.json";
         public const string FilePathBoards = "DB_Boards.json";
@@ -28,7 +28,7 @@ namespace Trello
             this.myProgram = myProgram;
         }
 
-        public override void Add<TEntity>(TEntity entity)
+        public void Add<TEntity>(TEntity entity)
         {
             if (entity.GetType() == typeof(Board))
             {
@@ -62,19 +62,19 @@ namespace Trello
             File.WriteAllText(fileDB, jsonString);
         }
 
-        public override void RemoveFromDB<TEntity>(TEntity entity)
+        public void RemoveFromDB<TEntity>(TEntity entity)
         {
             Add(entity);
         }
 
-        public override void Update<TEntity>(TEntity entity)
+        public void Update<TEntity>(TEntity entity)
         {
             Add(entity);
         }
 
 
 
-        public override List<Board> GetBoards(Repository repository)
+        public List<Board> GetBoards(Repository repository)
         {
             List<Board> boardsList = new List<Board>();
 
@@ -94,7 +94,7 @@ namespace Trello
             return boardsList;
         }
 
-        public override List<HomeWork> GetHomeWorks(Repository repository)
+        public List<HomeWork> GetHomeWorks(Repository repository)
         {
             List<HomeWork> homeWorksList = new List<HomeWork>();
 
@@ -114,7 +114,7 @@ namespace Trello
             return homeWorksList;
         }
 
-        public override List<Person> GetPersons()
+        public List<Person> GetPersons()
         {
             List<Person> personsList = new List<Person>();
 

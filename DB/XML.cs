@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Trello
 {
-    class XML : AbstractDBProvider
+    class XML : IDBProvider
     {
         public const string FilePath = "DB.xml";
 
@@ -53,7 +53,7 @@ namespace Trello
         }
 
 
-        public override List<Person> GetPersons()
+        public List<Person> GetPersons()
         {
             List<Person> Persons = new List<Person>();
 
@@ -104,7 +104,7 @@ namespace Trello
             return Persons;
         }
 
-        public override List<Board> GetBoards(Repository repository)
+        public List<Board> GetBoards(Repository repository)
         {
             List<Board> Boards = new List<Board>();
 
@@ -156,7 +156,7 @@ namespace Trello
             return Boards;
         }
 
-        public override List<HomeWork> GetHomeWorks(Repository repository)
+        public List<HomeWork> GetHomeWorks(Repository repository)
         {
             List<HomeWork> HomeWorks = new List<HomeWork>();
 
@@ -280,7 +280,7 @@ namespace Trello
 
 
         //Interfaces
-        public override void Update<TEntity>(TEntity entity)
+        public void Update<TEntity>(TEntity entity)
         {
             if (entity.GetType() == typeof(HomeWork))
             {
@@ -288,7 +288,7 @@ namespace Trello
             }
         }
 
-        public override void RemoveFromDB<TEntity>(TEntity entity)
+        public void RemoveFromDB<TEntity>(TEntity entity)
         {
             if (entity.GetType() == typeof(Board))
             {
@@ -300,7 +300,7 @@ namespace Trello
             }
         }
 
-        public override void Add<TEntity>(TEntity entity)
+        public void Add<TEntity>(TEntity entity)
         {
             if (entity.GetType() == typeof(Board))
             {

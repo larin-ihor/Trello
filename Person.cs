@@ -55,6 +55,8 @@ namespace Trello
         {
             Person newStudent = new Person(name, myProgram.repository.Persons.Get().Count() + 1, type, email);
 
+            Logger.WriteLogAsync($"Created new person: {newStudent}");
+
             return newStudent;
         }
 

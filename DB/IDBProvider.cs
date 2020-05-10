@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Trello
 {
-    abstract class AbstractDBProvider
+    interface IDBProvider
     {
         public abstract void RemoveFromDB<TEntity>(TEntity entity);
 

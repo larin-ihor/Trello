@@ -6,7 +6,7 @@ namespace Trello
 {
     class Repository
     {
-        private readonly AbstractDBProvider dBProvider;
+        private readonly IDBProvider dBProvider;
 
         private TrelloAnalog myProgram;
 
@@ -14,7 +14,7 @@ namespace Trello
         public BoardRepository Boards;
         public HomeWorkRepository HomeWorks;
 
-        public Repository(TrelloAnalog myProgram, AbstractDBProvider dbProvider)
+        public Repository(TrelloAnalog myProgram, IDBProvider dbProvider)
         {
             this.myProgram = myProgram;
             this.dBProvider = dbProvider;
